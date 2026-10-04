@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useCart } from "@/hooks/use-cart";
+import { useCart } from "@/store/use-cart";
 import { Trash2, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Product } from "@/types/types";
 import { money } from "@/lib/utils";

@@ -1,4 +1,4 @@
-import {useCart} from '@/hooks/use-cart';
+import {useCart} from '@/store/use-cart';
 import Link from 'next/link';
 import { Product } from '@/types/types';
 // import {trackEvent} from '@/lib/tracking';

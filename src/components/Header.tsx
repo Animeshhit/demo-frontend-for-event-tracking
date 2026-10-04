@@ -1,12 +1,14 @@
 "use client";
-import { useCartStore } from "@/hooks/use-cart";
+import { useCartStore } from "@/store/use-cart";
 import { useSearch } from "@/hooks/use-search";
 import {  useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, ShoppingBag, UserRound } from "lucide-react";
+import { useUserStore } from "@/store/user-store";
 
 export default function Header() {
+  const user = useUserStore((s) => s.user);
   const cartItemCount = useCartStore((state) =>
     state.cart.items.reduce((count, item) => count + item.quantity, 0),
   );
@@ -69,17 +71,9 @@ export default function Header() {
             </div>
           )}
         </div>
-        {false ? (
-            <></>
-        //   <button
-        //     onClick={logout}
-        //     className="hidden items-center gap-2 text-sm md:flex"
-        //   >
-        //     <span className="grid size-7 place-items-center rounded-full bg-black text-xs text-white">
-        //       {user.name[0]}
-        //     </span>
-        //     {user.name}
-        //   </button>
+        {/* will implement logout later */}
+        {user ? (
+         <p>{user.name.split(" ")[0]}</p>
         ) : (
           <Link
             href="/auth/login"

@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import AuthProvider from "@/providers/auth.provider";
 
 export const metadata: Metadata = {
   title: "E-commerce",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: "light",
   themeColor: "#f7f6f1",
-};  
+};
 
 const geist = Geist({
   subsets: ["latin"],
@@ -28,10 +29,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`antialiased ${geist.className}`}>
-        <Header />
-        {children}
-        <Footer/>
-        </body>
+        <AuthProvider>
+          <Header />
+          {children}
+          <Footer />
+        </AuthProvider>
+      </body>
     </html>
   );
 }

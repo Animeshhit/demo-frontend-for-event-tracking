@@ -1,5 +1,5 @@
 "use client";
-import { useCart } from "@/hooks/use-cart";
+import { useCart } from "@/store/use-cart";
 import { useEffect, useState } from "react";
 // import { trackEvent } from "@/lib/tracking";
 import { ArrowRight, Check, Sparkles } from "lucide-react";

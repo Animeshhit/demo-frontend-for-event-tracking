@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Product } from "@/types/types";
 import { money } from "@/lib/utils";
-import { useCart } from "@/hooks/use-cart";
+import { useCart } from "@/store/use-cart";
 import { Check, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
