@@ -1,7 +1,7 @@
 "use client";
 import { useCart } from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
-import { trackEvent } from "@/lib/tracking";
+// import { trackEvent } from "@/lib/tracking";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { money } from "@/lib/utils";
 import Link from "next/link";
@@ -88,13 +88,13 @@ export function CheckoutContent({ buyNowId }: { buyNowId?: string }) {
 
   const pay = () => {
     setStep("processing");
-    trackEvent("CHECKOUT_STARTED");
+    // trackEvent("CHECKOUT_STARTED");
     setTimeout(() => setStep("result"), 900);
   };
 
   const complete = (kind: "success" | "failure") => {
     setResult(kind);
-    trackEvent(kind === "success" ? "PAYMENT_SUCCESS" : "PAYMENT_FAILED");
+    // trackEvent(kind === "success" ? "PAYMENT_SUCCESS" : "PAYMENT_FAILED");
     if (kind === "success" && !buyNow) clearCart();
   };
 

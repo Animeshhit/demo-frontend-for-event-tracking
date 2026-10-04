@@ -10,9 +10,9 @@ export function proxy(request: NextRequest) {
     deviceId = crypto.randomUUID()
     
     response.cookies.set('device_id', deviceId, {
-      maxAge: 60 * 60 * 24 * 365, // 1 year
+      maxAge: 60 * 60 * 24 * 365,
       path: '/',
-      httpOnly: false, // Set to true if only needed by the server
+      httpOnly: false, 
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax'
     })

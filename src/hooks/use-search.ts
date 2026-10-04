@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 // import { searchProducts } from '@/lib/products'
-import { trackEvent } from '@/lib/tracking'
+// import { trackEvent } from '@/lib/tracking'
 import type { Product } from '@/types/types'
 
 export function useSearch() {
@@ -16,7 +16,7 @@ export function useSearch() {
         setIsSearching(true)
         // const searchResults = searchProducts(query)
         setResults([])
-        trackEvent('SEARCH', { query, resultCount: 0 })
+        // trackEvent('SEARCH', { query, resultCount: 0 })
         setIsSearching(false)
       } else {
         setResults([])

@@ -8,15 +8,20 @@ import Link from "next/link";
 import Image from "next/image";
 import Rating from "../Home/Rating";
 import { Button } from "../ui/button";
-import { trackEvent } from "@/lib/tracking";
+
+import { useEffect } from "react";
+import { trackEvent } from "@/lib/analytics/trackEvent";
 
 export default function ProductDetail({ product }: { product: Product }) {
- 
+  useEffect(() => {
+    trackEvent({ eventName: "PRODUCT_VIEW", productId: product.id });
+  }, [product.id]);
+
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const add = () => {
-    addToCart(product.id, quantity,product.priceMinor);
+    addToCart(product.id, quantity, product.priceMinor);
     setAdded(true);
     setTimeout(() => setAdded(false), 2200);
   };
@@ -53,10 +58,15 @@ export default function ProductDetail({ product }: { product: Product }) {
           </p>
           <div className="mt-8 flex items-baseline gap-3">
             <span className="text-3xl">{money(product.priceMinor)}</span>
-            <del className="text-black/35">{money(product.originalPriceMinor)}</del>
+            <del className="text-black/35">
+              {money(product.originalPriceMinor)}
+            </del>
             <span className="rounded-full bg-[#c1fbd4] px-3 py-1 text-xs">
               Save{" "}
-              {Math.round((1 - product.priceMinor / product.originalPriceMinor) * 100)}%
+              {Math.round(
+                (1 - product.priceMinor / product.originalPriceMinor) * 100,
+              )}
+              %
             </span>
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -90,7 +100,7 @@ export default function ProductDetail({ product }: { product: Product }) {
             </Button>
             <Link
               href={`/checkout?buyNow=${product.id}`}
-              onClick={() => trackEvent("BUY_NOW", { productId: product.id })}
+              //   onClick={() => trackEvent("BUY_NOW", { productId: product.id })}
               className="inline-flex items-center rounded-full border border-black px-7 py-2 text-sm hover:bg-black hover:text-white"
             >
               Buy now

@@ -1,7 +1,7 @@
 import {useCart} from '@/hooks/use-cart';
 import Link from 'next/link';
 import { Product } from '@/types/types';
-import {trackEvent} from '@/lib/tracking';
+// import {trackEvent} from '@/lib/tracking';
 import Image from 'next/image';
 import { money } from '@/lib/utils';
 import { Plus } from 'lucide-react';
@@ -11,13 +11,15 @@ import Rating from './Home/Rating';
 
 
 
+
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
+
   return (
     <article className="group">
       <Link
         href={`/products/${product.id}`}
-        onClick={() => trackEvent("PRODUCT_VIEW", { productId: product.id })}
+        // onClick={() => trackEvent("PRODUCT_VIEW", { productId: product.id })}
       >
         <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-[#e9e8e1]">
           <Image

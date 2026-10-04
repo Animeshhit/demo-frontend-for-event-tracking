@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { trackEvent } from '@/lib/tracking'
+// import { trackEvent } from '@/lib/tracking'
 import type { User } from '@/types/types'
 
 const AUTH_STORAGE_KEY = 'ecommerce_user'
@@ -31,13 +31,13 @@ export function useAuth() {
     }
     setUser(newUser)
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newUser))
-    trackEvent('LOGIN', { name, email })
+    // trackEvent('LOGIN', { name, email })
   }, [])
 
   const logout = useCallback(() => {
     setUser(null)
     localStorage.removeItem(AUTH_STORAGE_KEY)
-    trackEvent('LOGOUT', {})
+    // trackEvent('LOGOUT', {})
   }, [])
 
   return {
