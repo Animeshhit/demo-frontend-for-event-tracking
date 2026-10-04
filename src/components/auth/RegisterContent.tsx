@@ -3,15 +3,25 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { loginSchema, getFieldErrors } from "@/lib/validations/auth";
+import { registerSchema, getFieldErrors } from "@/lib/validations/auth";
 import { AuthField } from "./AuthField";
 
-type Form = { email: string; password: string };
+type Form = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
-export function LoginContent() {
+export function RegisterContent() {
   const router = useRouter();
 
-  const [form, setForm] = useState<Form>({ email: "", password: "" });
+  const [form, setForm] = useState<Form>({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [errors, setErrors] = useState<Partial<Record<keyof Form, string>>>({});
   const [serverError, setServerError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -26,7 +36,7 @@ export function LoginContent() {
     e.preventDefault();
     setServerError("");
 
-    const result = loginSchema.safeParse(form);
+    const result = registerSchema.safeParse(form);
     if (!result.success) {
       setErrors(getFieldErrors<keyof Form>(result.error));
       return;
@@ -34,25 +44,21 @@ export function LoginContent() {
 
     setSubmitting(true);
     try {
-      const { email, password } = result.data;
-      let req = await fetch("/api/auth/login", {
+      const { name, email, password } = result.data;
+      let req = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
+        body: JSON.stringify({ email: email, password: password, name: name }),
       });
 
       if (!req.ok) {
-        setServerError("failed to login");
+        setServerError("failed to register");
       }
       let data = await req.json();
 
-
-        router.push("/");
+      router.push("/");
     } catch (err) {
       setServerError(
         err instanceof Error ? err.message : "Something went wrong. Try again.",
@@ -65,16 +71,24 @@ export function LoginContent() {
   return (
     <main className="mx-auto max-w-lg px-5 py-24 lg:py-32">
       <p className="text-xs uppercase tracking-[.18em] text-black/45">
-        Account / Sign in
+        Account / Register
       </p>
       <h1 className="mt-3 text-5xl font-light tracking-[-.07em]">
-        Welcome back.
+        A quieter way to shop.
       </h1>
       <p className="mt-4 text-black/55">
-        Sign in to see your bag and your orders.
+        Create an account to save your bag and track your orders.
       </p>
 
       <form onSubmit={handleSubmit} noValidate className="mt-10 grid gap-4">
+        <AuthField
+          label="Full name"
+          name="name"
+          autoComplete="name"
+          value={form.name}
+          onChange={handleChange}
+          error={errors.name}
+        />
         <AuthField
           label="Email"
           name="email"
@@ -88,10 +102,19 @@ export function LoginContent() {
           label="Password"
           name="password"
           type="password"
-          autoComplete="current-password"
+          autoComplete="new-password"
           value={form.password}
           onChange={handleChange}
           error={errors.password}
+        />
+        <AuthField
+          label="Confirm password"
+          name="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          value={form.confirmPassword}
+          onChange={handleChange}
+          error={errors.confirmPassword}
         />
 
         {serverError && (
@@ -105,15 +128,15 @@ export function LoginContent() {
           disabled={submitting}
           className="mt-4 rounded-full bg-black px-6 py-3 text-sm text-white hover:bg-black/75 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {submitting ? "Signing in…" : "Sign in"}
+          {submitting ? "Creating account…" : "Create account"}
           {!submitting && <ArrowRight className="ml-2 inline size-4" />}
         </button>
       </form>
 
       <p className="mt-8 text-sm text-black/55">
-        New here?{" "}
-        <Link href="/auth/register" className="text-black underline">
-          Create an account
+        Already have an account?{" "}
+        <Link href="/login" className="text-black underline">
+          Sign in
         </Link>
       </p>
     </main>

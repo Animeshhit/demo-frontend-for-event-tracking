@@ -1,11 +1,10 @@
 "use server";
 
-// my data will never change, so i implemented that it would fetch once 
 export const getProducts = async () => {
   try {
-    const res = await fetch("http://localhost:8080/api/v1/products", {
+    const res = await fetch(`${process.env.BACKEND_URL}/api/v1/products`, {
       cache: "force-cache",
-      next: { tags: ["products"] }, // optional, lets you refresh it manually later
+      next: { tags: ["products"] }, 
     });
 
     if (!res.ok) {
@@ -24,7 +23,7 @@ export const getProducts = async () => {
 export const getProductById = async (id: string) => {
   try {
     const res = await fetch(
-      `http://localhost:8080/api/v1/products/${encodeURIComponent(id)}`,
+      `${process.env.BACKEND_URL}/api/v1/products/${encodeURIComponent(id)}`,
       {
         cache: "force-cache",
         next: { tags: ["products", `product-${id}`] },

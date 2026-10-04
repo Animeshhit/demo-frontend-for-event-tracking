@@ -1,17 +1,15 @@
 "use client";
-import { useCartStore } from '@/hooks/use-cart';
-import {useAuth} from '@/hooks/use-auth';
-import {useSearch} from '@/hooks/use-search';
-import {useEffect, useState} from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import {Search, ShoppingBag, UserRound} from "lucide-react";
+import { useCartStore } from "@/hooks/use-cart";
+import { useSearch } from "@/hooks/use-search";
+import {  useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Search, ShoppingBag, UserRound } from "lucide-react";
 
 export default function Header() {
   const cartItemCount = useCartStore((state) =>
     state.cart.items.reduce((count, item) => count + item.quantity, 0),
   );
-  const { user, login, logout } = useAuth();
   const { query, setQuery, results, clearSearch } = useSearch();
   const [open, setOpen] = useState(false);
   const shown = query ? results : [];
@@ -71,31 +69,33 @@ export default function Header() {
             </div>
           )}
         </div>
-        {user ? (
-          <button
-            onClick={logout}
-            className="hidden items-center gap-2 text-sm md:flex"
-          >
-            <span className="grid size-7 place-items-center rounded-full bg-black text-xs text-white">
-              {user.name[0]}
-            </span>
-            {user.name}
-          </button>
+        {false ? (
+            <></>
+        //   <button
+        //     onClick={logout}
+        //     className="hidden items-center gap-2 text-sm md:flex"
+        //   >
+        //     <span className="grid size-7 place-items-center rounded-full bg-black text-xs text-white">
+        //       {user.name[0]}
+        //     </span>
+        //     {user.name}
+        //   </button>
         ) : (
-          <button
-            // onClick={login}
-            className="hidden items-center gap-2 text-sm md:flex"
+          <Link
+            href="/auth/login"
+            className="relative flex items-center gap-3 p-2"
+            aria-label="sign in"
           >
             <UserRound className="size-4" />
             Sign in
-          </button>
+          </Link>
         )}
         <Link
           href="/cart"
           className="relative rounded-full border border-black/15 p-2"
           aria-label="Cart"
         >
-          <ShoppingBag/>
+          <ShoppingBag />
           <span className="absolute -right-1 -top-2 min-w-4 rounded-full bg-black px-1 text-center text-[10px] text-white">
             {cartItemCount}
           </span>
