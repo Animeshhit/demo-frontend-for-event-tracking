@@ -5,6 +5,8 @@ import { ArrowRight } from "lucide-react";
 import { ProductCard } from "../ProductCard";
 import { Product } from "@/types/types";
 import { getProducts } from "@/actions/product";
+import { trackEvent } from "@/lib/analytics/trackEvent";
+import { EVENTS } from "@/lib/analytics/events";
 
 export default function HomeContent() {
   const [category, setCategory] = useState("All");
@@ -83,8 +85,22 @@ export default function HomeContent() {
             ].map((item) => (
               <button
                 key={item}
-                onClick={() => setCategory(item)}
-                className={`rounded-full border px-4 py-2 text-xs transition ${category === item ? "border-black bg-black text-white" : "border-black/15 hover:border-black"}`}
+                onClick={() => {
+                  setCategory(item);
+                  if (item !== "All") {
+                    trackEvent({
+                      eventName: EVENTS.CATEGORY_CLICK,
+                      properties: {
+                        categoryName: item,
+                      },
+                    });
+                  }
+                }}
+                className={`rounded-full border px-4 py-2 text-xs transition ${
+                  category === item
+                    ? "border-black bg-black text-white"
+                    : "border-black/15 hover:border-black"
+                }`}
               >
                 {item}
               </button>

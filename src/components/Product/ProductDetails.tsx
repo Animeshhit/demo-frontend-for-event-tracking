@@ -11,10 +11,11 @@ import { Button } from "../ui/button";
 
 import { useEffect } from "react";
 import { trackEvent } from "@/lib/analytics/trackEvent";
+import { EVENTS } from "@/lib/analytics/events";
 
 export default function ProductDetail({ product }: { product: Product }) {
   useEffect(() => {
-    trackEvent({ eventName: "PRODUCT_VIEW", productId: product.id });
+    trackEvent({ eventName: EVENTS.PRODUCT_VIEW, productId: product.id });
   }, [product.id]);
 
   const { addToCart } = useCart();
@@ -100,7 +101,16 @@ export default function ProductDetail({ product }: { product: Product }) {
             </Button>
             <Link
               href={`/checkout?buyNow=${product.id}`}
-              //   onClick={() => trackEvent("BUY_NOW", { productId: product.id })}
+              onClick={() => {
+                trackEvent({
+                  eventName: EVENTS.BUY_NOW,
+                  productId: product.id,
+                  properties: {
+                    quantity,
+                    priceMinor: product.priceMinor,
+                  },
+                });
+              }}
               className="inline-flex items-center rounded-full border border-black px-7 py-2 text-sm hover:bg-black hover:text-white"
             >
               Buy now

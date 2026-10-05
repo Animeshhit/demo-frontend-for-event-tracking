@@ -8,9 +8,24 @@ import { Product } from "@/types/types";
 import { money } from "@/lib/utils";
 import { getProductById } from "@/actions/product";
 
+import { trackEvent } from "@/lib/analytics/trackEvent";
+import { EVENTS } from "@/lib/analytics/events";
+
 export default function CartContent() {
   const { cart, isLoading, updateQuantity, removeFromCart, getCartTotal } =
     useCart();
+
+  const handleRemoveFromCart = (productId: string, quantity: number) => {
+    removeFromCart(productId);
+
+    trackEvent({
+      eventName: EVENTS.REMOVE_FROM_CART,
+      productId,
+      properties: {
+        quantity,
+      },
+    });
+  };
 
   const [productMap, setProductMap] = useState<Record<string, Product>>({});
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -29,7 +44,9 @@ export default function CartContent() {
     let cancelled = false;
 
     async function loadProducts() {
-      const results = await Promise.all(missing.map((id) => getProductById(id)));
+      const results = await Promise.all(
+        missing.map((id) => getProductById(id)),
+      );
       if (cancelled) return;
 
       setProductMap((prev) => {
@@ -55,7 +72,7 @@ export default function CartContent() {
       Boolean(item.product),
     );
 
-   if (isLoading || loadingProducts)
+  if (isLoading || loadingProducts)
     return (
       <div className="mx-auto max-w-7xl px-5 py-24 text-black/50">
         Loading your bag…
@@ -110,7 +127,7 @@ export default function CartContent() {
                     </p>
                   </div>
                   <button
-                    onClick={() => removeFromCart(product.id)}
+                    onClick={() => handleRemoveFromCart(product.id, quantity)}
                     aria-label={`Remove ${product.name}`}
                   >
                     <Trash2 className="size-4 text-black/45 hover:text-red-600" />

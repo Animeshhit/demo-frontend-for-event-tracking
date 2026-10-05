@@ -48,3 +48,25 @@ export const getProductById = async (id: string) => {
     return null;
   }
 };
+
+
+export const searchProducts = async (query: string) => {
+  try {
+    const res = await fetch(
+      `${process.env.BACKEND_URL}/api/v1/products/search?q=${encodeURIComponent(query)}`,
+      {
+        cache: "no-store",
+      },
+    );
+
+    if (!res.ok) {
+      return [];
+    }
+
+    const products = await res.json();
+    return products;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+};

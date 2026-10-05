@@ -1,35 +1,55 @@
-'use client'
+"use client";
 
-import { useCallback, useEffect, useState } from 'react'
-// import { searchProducts } from '@/lib/products'
-// import { trackEvent } from '@/lib/tracking'
-import type { Product } from '@/types/types'
+import { useCallback, useEffect, useState } from "react";
+import type { Product } from "@/types/types";
+import { searchProducts } from "@/actions/product";
+import { trackEvent } from "@/lib/analytics/trackEvent";
+import { EVENTS } from "@/lib/analytics/events";
 
 export function useSearch() {
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState<Product[]>([])
-  const [isSearching, setIsSearching] = useState(false)
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Product[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (query.trim()) {
-        setIsSearching(true)
-        // const searchResults = searchProducts(query)
-        setResults([])
-        // trackEvent('SEARCH', { query, resultCount: 0 })
-        setIsSearching(false)
-      } else {
-        setResults([])
-      }
-    }, 300)
+    const searchQuery = query.trim();
 
-    return () => clearTimeout(timer)
-  }, [query])
+    if (!searchQuery) {
+      setResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+
+      try {
+        const searchResults = await searchProducts(searchQuery);
+
+        setResults(searchResults);
+
+        trackEvent({
+          eventName: EVENTS.SEARCH,
+          properties: {
+            query: searchQuery,
+            resultsCount: searchResults.length,
+          },
+        });
+      } catch (error) {
+        console.error("Search failed:", error);
+        setResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const clearSearch = useCallback(() => {
-    setQuery('')
-    setResults([])
-  }, [])
+    setQuery("");
+    setResults([]);
+  }, []);
 
   return {
     query,
@@ -37,5 +57,5 @@ export function useSearch() {
     results,
     isSearching,
     clearSearch,
-  }
+  };
 }

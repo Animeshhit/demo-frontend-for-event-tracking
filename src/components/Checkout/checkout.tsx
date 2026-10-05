@@ -1,12 +1,12 @@
 "use client";
 import { useCart } from "@/store/use-cart";
 import { useEffect, useState } from "react";
-// import { trackEvent } from "@/lib/tracking";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { money } from "@/lib/utils";
-import Link from "next/link";
 import { Product } from "@/types/types";
 import { getProductById } from "@/actions/product";
+import { trackEvent } from "@/lib/analytics/trackEvent";
+import { EVENTS } from "@/lib/analytics/events";
 
 export function CheckoutContent({ buyNowId }: { buyNowId?: string }) {
   const { cart, isLoading, clearCart } = useCart();
@@ -44,7 +44,9 @@ export function CheckoutContent({ buyNowId }: { buyNowId?: string }) {
     let cancelled = false;
 
     async function load() {
-      const results = await Promise.all(missing.map((id) => getProductById(id)));
+      const results = await Promise.all(
+        missing.map((id) => getProductById(id)),
+      );
       if (cancelled) return;
 
       setProductMap((prev) => {
@@ -94,10 +96,34 @@ export function CheckoutContent({ buyNowId }: { buyNowId?: string }) {
 
   const complete = (kind: "success" | "failure") => {
     setResult(kind);
-    // trackEvent(kind === "success" ? "PAYMENT_SUCCESS" : "PAYMENT_FAILED");
-    if (kind === "success" && !buyNow) clearCart();
-  };
 
+    trackEvent({
+      eventName: EVENTS.PAYMENT,
+      properties: {
+        amountMinor: total,
+        status: kind,
+        paymentMethod: "fake_payment",
+      },
+    });
+
+    if (kind === "success") {
+      const orderId = crypto.randomUUID();
+
+      trackEvent({
+        eventName: EVENTS.PURCHASE,
+        properties: {
+          orderId,
+          amountMinor: total,
+          itemCount: items.length,
+          paymentMethod: "fake_payment",
+        },
+      });
+
+      if (!buyNow) {
+        clearCart();
+      }
+    }
+  };
   // without this, "Nothing to checkout" flashes while products are loading
   if ((isLoading || loadingProducts) && step !== "result")
     return (
@@ -149,7 +175,18 @@ export function CheckoutContent({ buyNowId }: { buyNowId?: string }) {
               </div>
               <button
                 disabled={!valid}
-                onClick={() => setStep("summary")}
+                onClick={() => {
+                  trackEvent({
+                    eventName: EVENTS.CHECKOUT,
+                    properties: {
+                      itemCount: items.length,
+                      totalAmountMinor: total,
+                      buyNow,
+                    },
+                  });
+
+                  setStep("summary");
+                }}
                 className="mt-8 rounded-full bg-black px-6 py-3 text-sm text-white disabled:cursor-not-allowed disabled:opacity-30"
               >
                 Continue to summary{" "}
