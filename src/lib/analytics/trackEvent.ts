@@ -13,6 +13,7 @@ export async function trackEvent({
   properties = {},
 }: TrackEventInput) {
   const sessionId = getSessionId();
+  const eventId = crypto.randomUUID();
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/events`,
@@ -24,6 +25,7 @@ export async function trackEvent({
       credentials: "include",
       body: JSON.stringify({
         eventName,
+        eventId,
         productId,
         sessionId,
         properties,
