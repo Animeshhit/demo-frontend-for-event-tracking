@@ -15,7 +15,7 @@ import { EVENTS } from "@/lib/analytics/events";
 
 export default function ProductDetail({ product }: { product: Product }) {
   useEffect(() => {
-    trackEvent({ eventName: EVENTS.PRODUCT_VIEW, productId: product.id });
+    trackEvent({ eventName: EVENTS.PRODUCT_VIEW, productId: product.id,properties:{productName:product.name} });
   }, [product.id]);
 
   const { addToCart } = useCart();

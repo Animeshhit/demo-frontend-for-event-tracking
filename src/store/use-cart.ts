@@ -3,7 +3,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
-// import { trackEvent } from '@/lib/tracking'
 import type { Cart, CartItem } from '@/types/types'
 
 const initialCart: Cart = { items: [] }
@@ -38,14 +37,12 @@ export const useCartStore = create<CartStore>()(
             : [...state.cart.items, { productId, quantity, priceMinor }]
 
           const nextCart = { items: newItems }
-        //   trackEvent('ADD_TO_CART', { productId, quantity, priceMinor })
           return { cart: nextCart, isLoading: false }
         })
       },
       removeFromCart: (productId) => {
         set((state) => {
           const nextCart = { items: state.cart.items.filter((item) => item.productId !== productId) }
-        //   trackEvent('REMOVE_FROM_CART', { productId })
           return { cart: nextCart, isLoading: false }
         })
       },
@@ -62,7 +59,6 @@ export const useCartStore = create<CartStore>()(
             ),
           }
 
-        //  uth
           return { cart: nextCart, isLoading: false }
         })
       },
