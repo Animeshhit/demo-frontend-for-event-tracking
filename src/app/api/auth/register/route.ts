@@ -4,8 +4,10 @@ import {
   setRefreshTokenCookie,
 } from "@/actions/cookies";
 
+
 export async function POST(request: Request) {
   const body = await request.text();
+  const incomingCookie = request.headers.get("cookie") ?? "";
 
   const backendRes = await fetch(
     `${process.env.BACKEND_URL}/api/v1/auth/register`,
@@ -13,9 +15,11 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "content-type": "application/json",
+        ...(incomingCookie ? { Cookie: incomingCookie } : {}),
       },
       body,
       cache: "no-store",
+      credentials:"include"
     }
   );
 

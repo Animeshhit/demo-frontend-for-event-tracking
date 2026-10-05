@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { registerSchema, getFieldErrors } from "@/lib/validations/auth";
 import { AuthField } from "./AuthField";
+import { useUserStore } from "@/store/user-store";
 
 type Form = {
   name: string;
@@ -15,7 +16,7 @@ type Form = {
 
 export function RegisterContent() {
   const router = useRouter();
-
+const setUser = useUserStore((s) => s.setUser);
   const [form, setForm] = useState<Form>({
     name: "",
     email: "",
@@ -51,12 +52,20 @@ export function RegisterContent() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: email, password: password, name: name }),
+        credentials:"include"
       });
 
       if (!req.ok) {
         setServerError("failed to register");
       }
       let data = await req.json();
+
+      if(!data.user){
+         setServerError("failed to register");
+        return;
+      }
+
+      setUser(data.user);
 
       router.push("/");
     } catch (err) {

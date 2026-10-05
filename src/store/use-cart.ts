@@ -62,12 +62,7 @@ export const useCartStore = create<CartStore>()(
             ),
           }
 
-        //   trackEvent('UPDATE_CART_QUANTITY', {
-        //     productId,
-        //     quantity,
-        //     priceMinor: nextCart.items.find((item) => item.productId === productId)?.priceMinor,
-        //   })
-
+        //  uth
           return { cart: nextCart, isLoading: false }
         })
       },

@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { loginSchema, getFieldErrors } from "@/lib/validations/auth";
 import { AuthField } from "./AuthField";
+import { useUserStore } from "@/store/user-store";
 
 type Form = { email: string; password: string };
 
 export function LoginContent() {
   const router = useRouter();
+  const setUser = useUserStore((s) => s.setUser);
 
   const [form, setForm] = useState<Form>({ email: "", password: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof Form, string>>>({});
@@ -44,6 +46,7 @@ export function LoginContent() {
           email: email,
           password: password,
         }),
+        credentials:"include"
       });
 
       if (!req.ok) {
@@ -51,8 +54,13 @@ export function LoginContent() {
       }
       let data = await req.json();
 
+      if (!data.user) {
+        setServerError("failed to login");
+        return;
+      }
+      setUser(data.user);
 
-        router.push("/");
+      router.push("/");
     } catch (err) {
       setServerError(
         err instanceof Error ? err.message : "Something went wrong. Try again.",

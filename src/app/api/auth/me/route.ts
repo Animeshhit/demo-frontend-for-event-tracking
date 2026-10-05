@@ -1,11 +1,12 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: Request) {
   const cookieStore = await cookies();
 
-  const accessToken =
-    cookieStore.get("accessToken")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+  const forwardedCookieHeader = request.headers.get("cookie") ?? "";
 
   if (!accessToken) {
     return NextResponse.json(
@@ -13,7 +14,7 @@ export async function GET() {
         authenticated: false,
         reason: "ACCESS_TOKEN_MISSING",
       },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -24,29 +25,27 @@ export async function GET() {
         method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          ...(forwardedCookieHeader ? { Cookie: forwardedCookieHeader } : {}),
+          ...(refreshToken ? { "x-refresh-token": refreshToken } : {}),
         },
+        credentials: "include",
         cache: "no-store",
-      }
+      },
     );
 
-    const data =
-      await backendRes.json().catch(() => ({}));
+    const data = await backendRes.json().catch(() => ({}));
 
     if (!backendRes.ok) {
       return NextResponse.json(
         {
           authenticated: false,
-          reason:
-            backendRes.status === 404
-              ? "USER_NOT_FOUND"
-              : "ACCESS_TOKEN_INVALID",
-          message: data.message,
+          reason: data.message ?? "AUTHENTICATION_FAILED",
+          backendStatus: backendRes.status,
         },
-        {
-          status: backendRes.status,
-        }
+        { status: backendRes.status },
       );
     }
+
 
     return NextResponse.json({
       authenticated: true,
@@ -60,7 +59,7 @@ export async function GET() {
         authenticated: false,
         reason: "AUTH_SERVICE_ERROR",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

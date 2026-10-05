@@ -13,7 +13,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     const fetchUser = async () => {
       try {
-        const res = await fetch("/api/auth/me", { signal: controller.signal });
+        const res = await fetch("/api/auth/me", { signal: controller.signal ,credentials:"include"});
         if (!res.ok) {
           removeUser();
           return;
